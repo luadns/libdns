@@ -1,26 +1,43 @@
-**DEVELOPER INSTRUCTIONS:**
+# LuaDNS for [`libdns`](https://github.com/libdns/libdns)
 
-This repo is a template for developers to use when creating new [libdns](https://github.com/libdns/libdns) provider implementations.
+[![Go Reference](https://pkg.go.dev/badge/test.svg)](https://pkg.go.dev/github.com/libdns/luadns)
 
-Be sure to update:
+This package implements the [libdns interfaces](https://github.com/libdns/libdns) for [LuaDNS](https://www.luadns.com/api.html), allowing you to manage DNS records.
 
-- The package name
-- The Go module name in go.mod
-- The latest `libdns/libdns` version in go.mod
-- All comments and documentation, including README below and godocs
-- License (must be compatible with Apache/MIT)
-- All "TODO:"s is in the code
-- All methods that currently do nothing
+Usage:
 
-Remove this section from the readme before publishing.
+```go
+// Init Provider struct.
+provider := luadns.Provider{
+	Email:  email,
+	APIKey: key,
+}
 
----
+// List zone records.
+records, err := provider.GetRecords(ctx, zone)
+if err != nil {
+	log.Fatalln(err)
+}
 
-\<PROVIDER NAME\> for [`libdns`](https://github.com/libdns/libdns)
-=======================
+// Set zone records.
+records, err = provider.SetRecords(ctx, zone, records)
+if err != nil {
+	log.Fatalln(err)
+}
 
-[![Go Reference](https://pkg.go.dev/badge/test.svg)](https://pkg.go.dev/github.com/libdns/TODO:PROVIDER_NAME)
+// Append new records.
+records, err = provider.AppendRecords(ctx, zone, []libdns.Record{
+	libdns.Record{Name: "_acme-challenge", Type: "TXT", Value: "Hello, world!", TTL: 3600 * time.Second},
+})
+if err != nil {
+	log.Fatalln(err)
+}
 
-This package implements the [libdns interfaces](https://github.com/libdns/libdns) for \<PROVIDER\>, allowing you to manage DNS records.
+// Delete a list of records.
+_, err = provider.DeleteRecords(ctx, zone, records)
+if err != nil {
+	log.Fatalln(err)
+}
+```
 
-TODO: Show how to configure and use. Explain any caveats.
+For a complete example see [_examples/main.go](_examples/main.go).
